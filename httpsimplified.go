@@ -28,7 +28,7 @@ Use EncodeBody helper to generate application/x-www-form-urlencoded bodies.
 
 Finally, if http.DefaultClient doesn't rock your boat, you're free to build and
 execute a request through whatever means necessary and then call JSON, Bytes or
-None verify the response status code and handle the body:
+None to verify the response status code and handle the body:
 
 	req := EncodeBody(&http.Request{
 		Method: http.MethodPost,
