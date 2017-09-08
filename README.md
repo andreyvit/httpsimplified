@@ -11,8 +11,9 @@ Call Get, Post or Put to send a request and parse the response in a single call:
 ```go
 var resp responseType
 err := httpsimplified.Get(baseURL, path, params, headers, httpsimplified.JSON, &resp)
-where httpsimplified.JSON is a body parser function (we also provide Bytes, Raw and None parsers, and you can define your own). See the example for more details.
 ```
+
+where httpsimplified.JSON is a body parser function (we also provide Bytes, Raw and None parsers, and you can define your own). See the example for more details.
 
 For more advanced requests, build http.Request yourself and call Perform:
 
@@ -30,7 +31,7 @@ Use URL func to concatenate a URL and include query params.
 
 Use EncodeBody helper to generate application/x-www-form-urlencoded bodies.
 
-Finally, if http.DefaultClient doesn't rock your boat, you're free to build and execute a request through whatever means necessary and then call JSON, Bytes or None verify the response status code and handle the body:
+Finally, if http.DefaultClient doesn't rock your boat, you're free to build and execute a request through whatever means necessary and then call JSON, Bytes or None to verify the response status code and handle the body:
 
 ```go
 req := EncodeBody(&http.Request{
