@@ -2,6 +2,7 @@ package httpsimplified
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +16,8 @@ import (
 const (
 	ContentTypeJSON           = "application/json"
 	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
+
+	AuthorizationHeader = "Authorization"
 )
 
 func verify(resp *http.Response, expectedCType string) error {
@@ -167,4 +170,8 @@ func EncodeBody(r *http.Request, params url.Values) *http.Request {
 	}
 
 	return r
+}
+
+func BasicAuth(username, password string) string {
+	return "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 }
