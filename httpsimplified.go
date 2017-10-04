@@ -74,6 +74,59 @@ const (
 	AuthorizationHeader = "Authorization"
 )
 
+type Error struct {
+	Method string
+	Path   string
+	Cause  error
+}
+
+func (err *Error) Error() string {
+	return fmt.Sprintf("%s %s: %v", err.Method, err.Path, err.Cause)
+}
+
+type StatusError struct {
+	StatusCode int
+
+	ContentType string
+
+	Body interface{}
+
+	DecodingError error
+}
+
+func (err *StatusError) Error() string {
+	if err.ContentType == ContentTypeJSON {
+		if err.DecodingError != nil {
+			return fmt.Sprintf("HTTP %d, error decoding JSON: %v", err.StatusCode, err.DecodingError)
+		} else {
+			return fmt.Sprintf("HTTP %d, JSON: %v", err.StatusCode, err.Body)
+		}
+	} else {
+		return fmt.Sprintf("HTTP %d, response type: %v", err.StatusCode, err.ContentType)
+	}
+}
+
+type ContentTypeError struct {
+	StatusCode int
+
+	ContentType string
+
+	ExpectedContentType string
+}
+
+func (err *ContentTypeError) Error() string {
+	return fmt.Sprintf("HTTP %s, but unexpected response type %v, wanted %v", err.StatusCode, err.ContentType, err.ExpectedContentType)
+}
+
+func CheckStatusError(err error) *StatusError {
+	if e, ok := err.(*Error); ok {
+		err = e.Cause
+	}
+
+	e, _ := err.(*StatusError)
+	return e
+}
+
 func verify(resp *http.Response, expectedCType string) error {
 	mediaType := resp.Header.Get("Content-Type")
 	ctype, _, err := mime.ParseMediaType(mediaType)
@@ -86,17 +139,17 @@ func verify(resp *http.Response, expectedCType string) error {
 		if ctype == ContentTypeJSON {
 			err = json.NewDecoder(resp.Body).Decode(&body)
 			if err == nil {
-				return fmt.Errorf("HTTP Status %s, JSON %v", resp.Status, body)
+				return &StatusError{resp.StatusCode, ctype, body, nil}
 			} else {
-				return fmt.Errorf("HTTP Status %s, error decoding JSON: %v", resp.Status, err)
+				return &StatusError{resp.StatusCode, ctype, nil, err}
 			}
 		} else {
-			return fmt.Errorf("HTTP Status %s, %v response", resp.Status, ctype)
+			return &StatusError{resp.StatusCode, ctype, nil, nil}
 		}
 	}
 
 	if expectedCType != "" && ctype != expectedCType {
-		return fmt.Errorf("HTTP Status %s, but unexpected response type %v, wanted %v", resp.Status, ctype, expectedCType)
+		return &ContentTypeError{resp.StatusCode, ctype, expectedCType}
 	}
 
 	return nil
@@ -263,12 +316,12 @@ the result you pass in.
 func Perform(r *http.Request, parser Parser, result interface{}) error {
 	resp, err := http.DefaultClient.Do(r)
 	if err != nil {
-		return fmt.Errorf("%s %s: %v", r.Method, r.URL.Path, err)
+		return &Error{r.Method, r.URL.Path, err}
 	}
 
 	err = parser(resp, result)
 	if err != nil {
-		return fmt.Errorf("%s %s: %v", r.Method, r.URL.Path, err)
+		return &Error{r.Method, r.URL.Path, err}
 	}
 
 	return nil
