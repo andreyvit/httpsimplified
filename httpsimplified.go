@@ -127,6 +127,24 @@ func CheckStatusError(err error) *StatusError {
 	return e
 }
 
+func StatusCode(err error) int {
+	if e := CheckStatusError(err); e != nil {
+		return e.StatusCode
+	} else {
+		return 0
+	}
+}
+
+func Is5xx(err error) bool {
+	code := StatusCode(err)
+	return (code != 0) && (code >= 500 && code <= 599)
+}
+
+func Is4xx(err error) bool {
+	code := StatusCode(err)
+	return (code != 0) && (code >= 400 && code <= 499)
+}
+
 func verify(resp *http.Response, expectedCType string) error {
 	mediaType := resp.Header.Get("Content-Type")
 	ctype, _, err := mime.ParseMediaType(mediaType)
