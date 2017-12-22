@@ -363,7 +363,7 @@ func URL(base, path string, params url.Values) *url.URL {
 	}
 
 	if params != nil {
-		components.RawQuery = params.Encode()
+		components.RawQuery = strings.Replace(params.Encode(), "+", "%20", -1)
 	}
 
 	return components
