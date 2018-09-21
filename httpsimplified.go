@@ -9,8 +9,9 @@ Call Get, Post or Put to send a request and parse the response in a single call:
 	var resp responseType
 	err := httpsimplified.Get(baseURL, path, params, headers, httpsimplified.JSON, &resp)
 
-where httpsimplified.JSON is a body parser function (we also provide Bytes, Raw
-and None parsers, and you can define your own). See the example for more details.
+where httpsimplified.JSON is a body parser function (we also provide PlainText,
+Bytes, Raw and None parsers, and you can define your own).
+See the example for more details.
 
 For more advanced requests, build http.Request yourself and call Perform:
 
@@ -61,6 +62,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
@@ -238,6 +240,31 @@ func Bytes(resp *http.Response, result interface{}) error {
 }
 
 /*
+PlainText is a Parser function that verifies the response status code and reads
+the entire body into a string; result must be a pointer to a string variable.
+*/
+func PlainText(resp *http.Response, result interface{}) error {
+	defer resp.Body.Close()
+
+	err := verify(resp, "")
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("HTTP %s, error reading body: %v", resp.Status, err)
+	}
+
+	if !utf8.Valid(b) {
+		return fmt.Errorf("HTTP %s, error reading body: invalid utf-8 sequence encountered", resp.Status)
+	}
+
+	*(result.(*string)) = string(b)
+	return nil
+}
+
+/*
 None is a Parser function that verifies the response status code and discards
 the response body; result argument is ignored and should be nil.
 
@@ -261,7 +288,7 @@ valid and parsable via net/url, otherwise panic ensues.
 url.Values and http.Header are just maps that can be provided in place,
 no need to use their fancy Set or Add methods.
 
-parser can be either JSON, Bytes, Raw or None from this package,
+parser can be either JSON, PlainText, Bytes, Raw or None from this package,
 or your own custom parser function; it will be called with *http.Response and
 the result you pass in.
 */

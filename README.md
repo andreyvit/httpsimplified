@@ -13,7 +13,7 @@ var resp responseType
 err := httpsimplified.Get(baseURL, path, params, headers, httpsimplified.JSON, &resp)
 ```
 
-where httpsimplified.JSON is a body parser function (we also provide Bytes, Raw and None parsers, and you can define your own). See the example for more details.
+where httpsimplified.JSON is a body parser function (we also provide PlainText, Bytes, Raw and None parsers, and you can define your own). See the example for more details.
 
 For more advanced requests, build http.Request yourself and call Perform:
 
