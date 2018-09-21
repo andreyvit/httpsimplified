@@ -117,7 +117,7 @@ type ContentTypeError struct {
 }
 
 func (err *ContentTypeError) Error() string {
-	return fmt.Sprintf("HTTP %s, but unexpected response type %v, wanted %v", err.StatusCode, err.ContentType, err.ExpectedContentType)
+	return fmt.Sprintf("HTTP %d, but unexpected response type %v, wanted %v", err.StatusCode, err.ContentType, err.ExpectedContentType)
 }
 
 func CheckStatusError(err error) *StatusError {
