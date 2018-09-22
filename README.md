@@ -8,7 +8,7 @@ client := &http.Client{
 }
 
 var resp responseType
-err := httpsimplified.Get(baseURL, path, params, headers, client, httpsimplified.JSON, &resp)
+err := httpsimplified.Get(baseURL, path, params, headers, client, httpsimplified.JSON(&resp))
 ```
 
 ## v2
@@ -19,7 +19,7 @@ I've learned that [using `http.DefaultClient` is a bad idea](https://medium.com/
 
 > TL;DR: Go’s http package doesn’t specify request timeouts by default, allowing services to hijack your goroutines. Always specify a custom http.Client when connecting to outside services.
 
-So all functions in v2 accept an additional `*http.Client` argument. You can pass `http.DefaultClient` if you want the old behavior.
+So all functions in v2 accept an additional `*http.Client` argument. You can pass `http.DefaultClient` if you want the old behavior. See [CHANGELOG](CHANGELOG.md) for all changes.
 
 
 ## v1

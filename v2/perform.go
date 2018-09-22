@@ -16,8 +16,8 @@ type HTTPClient interface {
 
 /*
 Get builds a GET request with the given URL, parameters and headers, executes
-it via http.DefaultClient.Do and handles the body using the specified parser
-function.
+it via the given http.Client.Do and handles the body using the specified parser
+functions.
 
 base and path are concatenated to form a URL; at least one of them must be
 provided, but the other one can be an empty string. The resulting URL must be
@@ -26,9 +26,12 @@ valid and parsable via net/url, otherwise panic ensues.
 url.Values and http.Header are just maps that can be provided in place,
 no need to use their fancy Set or Add methods.
 
-parser can be either JSON, PlainText, Bytes, Raw or None from this package,
-or your own custom parser function; it will be called with *http.Response and
-the result you pass in.
+Pass an instance of *http.Client as client. You can use http.DefaultClient,
+but note that the default client has no timeouts and might potentially hang
+forever, causing goroutine leaks. A custom client is strongly recommended.
+
+For the parsers, use JSON, Bytes, PlainText, Raw or None from this package,
+or define your own custom one using MakeParser.
 */
 func Get(base, path string, params url.Values, headers http.Header, client HTTPClient, parsers ...Parser) error {
 	return Perform(&http.Request{
@@ -41,8 +44,7 @@ func Get(base, path string, params url.Values, headers http.Header, client HTTPC
 /*
 Post builds a POST request with the given URL, headers and body (which contains
 the given params in application/x-www-form-urlencoded format), executes
-it via http.DefaultClient.Do and handles the body using the specified parser
-function.
+it via the given http.Client.Do and handles the body using the specified parsers.
 
 base and path are concatenated to form a URL; at least one of them must be
 provided, but the other one can be an empty string. The resulting URL must be
@@ -51,9 +53,12 @@ valid and parsable via net/url, otherwise panic ensues.
 url.Values and http.Header are just maps that can be provided in place,
 no need to use their fancy Set or Add methods.
 
-parser can be either JSON, Bytes, Raw or None from this package,
-or your own custom parser function; it will be called with *http.Response and
-the result you pass in.
+Pass an instance of *http.Client as client. You can use http.DefaultClient,
+but note that the default client has no timeouts and might potentially hang
+forever, causing goroutine leaks. A custom client is strongly recommended.
+
+For the parsers, use JSON, Bytes, PlainText, Raw or None from this package,
+or define your own custom one using MakeParser.
 */
 func Post(base, path string, params url.Values, headers http.Header, client HTTPClient, parsers ...Parser) error {
 	return Perform(EncodeForm(&http.Request{
@@ -66,8 +71,7 @@ func Post(base, path string, params url.Values, headers http.Header, client HTTP
 /*
 Put builds a PUT request with the given URL, headers and body (which contains
 the given params in application/x-www-form-urlencoded format), executes
-it via the given http.Client and handles the body using the specified parser
-function.
+it via the given http.Client and handles the body using the specified parsers.
 
 base and path are concatenated to form a URL; at least one of them must be
 provided, but the other one can be an empty string. The resulting URL must be
@@ -76,9 +80,12 @@ valid and parsable via net/url, otherwise panic ensues.
 url.Values and http.Header are just maps that can be provided in place,
 no need to use their fancy Set or Add methods.
 
-parser can be either JSON, Bytes, Raw or None from this package,
-or your own custom parser function; it will be called with *http.Response and
-the result you pass in.
+Pass an instance of *http.Client as client. You can use http.DefaultClient,
+but note that the default client has no timeouts and might potentially hang
+forever, causing goroutine leaks. A custom client is strongly recommended.
+
+For the parsers, use JSON, Bytes, PlainText, Raw or None from this package,
+or define your own custom one using MakeParser.
 */
 func Put(base, path string, params url.Values, headers http.Header, client HTTPClient, parsers ...Parser) error {
 	return Perform(EncodeForm(&http.Request{
@@ -90,11 +97,14 @@ func Put(base, path string, params url.Values, headers http.Header, client HTTPC
 
 /*
 Perform executes the given request via the given http.Client and handles
-the body using the specified parser function.
+the body using the specified parsers.
 
-parser can be either JSON, Bytes, Raw or None from this package,
-or your own custom parser function; it will be called with *http.Response and
-the result you pass in.
+Pass an instance of *http.Client as client. You can use http.DefaultClient,
+but note that the default client has no timeouts and might potentially hang
+forever, causing goroutine leaks. A custom client is strongly recommended.
+
+For the parsers, use JSON, Bytes, PlainText, Raw or None from this package,
+or define your own custom one using MakeParser.
 */
 func Perform(r *http.Request, client HTTPClient, parsers ...Parser) error {
 	resp, err := client.Do(r)

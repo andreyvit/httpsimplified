@@ -13,6 +13,14 @@ where httpsimp.JSON is a body parser function (we also provide PlainText,
 Bytes, Raw and None parsers, and you can define your own).
 See the example for more details.
 
+You need to pass an instance of *http.Client. You can use http.DefaultClient,
+but note that the default client has no timeouts and might potentially hang
+forever, causing goroutine leaks. A custom client is strongly recommended:
+
+    client := &http.Client{
+        Timeout: time.Second * 10,
+    }
+
 You can adjust body parser parameters by passing additional options to body
 parser functions, like this:
 
@@ -55,9 +63,8 @@ For more advanced requests, build http.Request yourself and call Perform:
 Use URL func to concatenate a URL and include query params, and EncodeForm
 helper to generate application/x-www-form-urlencoded bodies.
 
-Finally, if http.Client.Do doesn't rock your boat, you're free to build and
-execute a request through whatever means necessary and then call Parse
-to verify the response status code and handle the body:
+Finally, you're free to build and execute a request through other means
+and then call Parse to handle the response:
 
     req := EncodeForm(&http.Request{
         Method: http.MethodPost,
@@ -65,7 +72,7 @@ to verify the response status code and handle the body:
         Header: http.Header{...},
     }, url.Params{...})
 
-    httpResp, err := whatever.Do(req)
+    httpResp, err := whatever(req)
     if err != nil { ... }
 
     var resp responseType
