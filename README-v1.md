@@ -1,39 +1,17 @@
 # httpsimplified
 
+[![GoDoc](https://godoc.org/github.com/andreyvit/httpsimplified?status.svg)](https://godoc.org/github.com/andreyvit/httpsimplified)
+
 Package httpsimplified sends outgoing HTTP requests via a simple straightforward API distilled from many internal Golang projects at USA Today Network. It embraces Go stdlib types like url.Values and http.Header, provides composable building blocks for more complex use cases and doesn't try to be clever.
-
-```go
-client := &http.Client{
-    Timeout: time.Second * 10,
-}
-
-var resp responseType
-err := httpsimplified.Get(baseURL, path, params, headers, client, httpsimplified.JSON, &resp)
-```
-
-## v2
-
-[![README v2](https://img.shields.io/badge/readme-v2-green.svg)](v2/) [![GoDoc](https://godoc.org/github.com/andreyvit/httpsimplified/v2?status.svg)](https://godoc.org/github.com/andreyvit/httpsimplified/v2)
-
-I've learned that [using `http.DefaultClient` is a bad idea](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779):
-
-> TL;DR: Go’s http package doesn’t specify request timeouts by default, allowing services to hijack your goroutines. Always specify a custom http.Client when connecting to outside services.
-
-So all functions in v2 accept an additional `*http.Client` argument. You can pass `http.DefaultClient` if you want the old behavior.
-
-
-## v1
-
-[![README v2](https://img.shields.io/badge/readme-v1-orange.svg)](README-v1.md) [![GoDoc](https://godoc.org/github.com/andreyvit/httpsimplified?status.svg)](https://godoc.org/github.com/andreyvit/httpsimplified)
-
-This version is deprecated.
-
-
 
 See [godoc.org/github.com/andreyvit/httpsimplified](https://godoc.org/github.com/andreyvit/httpsimplified) for a full reference.
 
 Call Get, Post or Put to send a request and parse the response in a single call:
 
+```go
+var resp responseType
+err := httpsimplified.Get(baseURL, path, params, headers, httpsimplified.JSON, &resp)
+```
 
 where httpsimplified.JSON is a body parser function (we also provide PlainText, Bytes, Raw and None parsers, and you can define your own). See the example for more details.
 
