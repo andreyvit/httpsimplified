@@ -11,7 +11,7 @@ var resp responseType
 err := httpsimp.Do(httpsimp.MakeGet(baseURL, path, params, headers), client, httpsimp.JSON(&resp))
 ```
 
-## v2
+## [v2](v2/)
 
 [![README v2](https://img.shields.io/badge/readme-v2-green.svg)](v2/) [![GoDoc](https://godoc.org/github.com/andreyvit/httpsimplified/v2?status.svg)](https://godoc.org/github.com/andreyvit/httpsimplified/v2)
 

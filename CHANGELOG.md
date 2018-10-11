@@ -9,7 +9,8 @@ See [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Breaking Changes
 - Package name changed from `httpsimplified` to `httpsimp`.
-- Added `*http.Client` argument to `Get`, `Post`, `Put` and `Perform`.
+- Renamed `Perform` into `Do`, added `*http.Client` argument.
+- Removed `Get`, `Post`, `Put`, instead one needs to call `Do` with a result of the new `MakeGet` or `MakeForm`.
 - Renamed `EncodeBody` into `EncodeForm`.
 - Renamed `BasicAuth` into `BasicAuthValue`.
 - Parsers can no longer be used directly; use `Parse` function instead.
@@ -18,6 +19,7 @@ See [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### New Features
 - Added support for multiple body parsers.
 - Added support for customizing status codes and content types expected by body parsers.
+- Added request builders: `MakeGet`, `MakeForm`, `MakeJSON` and `Make`.
 
 
 1.1.0 — 2018-09-21
