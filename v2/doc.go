@@ -4,10 +4,11 @@ API distilled from many internal Golang projects at USA Today Network.
 It embraces Go stdlib types like url.Values and http.Header, provides composable
 building blocks for more complex use cases and doesn't try to be clever.
 
-Call Get, Post or Put to send a request and parse the response in a single call:
+Call Perform with MakeGet, MakeForm, MakeJSON or Make
+to send a request and parse the response:
 
     var resp responseType
-    err := httpsimp.Get(baseURL, path, params, headers, client, httpsimp.JSON(&resp))
+    err := httpsimp.Perform(httpsimp.MakeGet(baseURL, path, params, headers), client, httpsimp.JSON(&resp))
 
 where httpsimp.JSON is a body parser function (we also provide PlainText,
 Bytes, Raw and None parsers, and you can define your own).
@@ -45,34 +46,37 @@ Pass multiple parsers to handle alternative response types or non-2xx status cod
     var resp responseStruct
     var bytes []byte
     var e errorStruct
-    err := httpsimp.Get(...,
+    err := httpsimp.Perform(...,
         httpsimp.JSON(&resp),
         httpsimp.Bytes(&bytes, httpsimp.ContentType("image/png")),
         httpsimp.JSON(&e, httpsimp.Status4xx5xx))
 
-For more advanced requests, build http.Request yourself and call Perform:
+If you need a cancelable request, use http.Request.WithContext:
+
+    var resp responseType
+    req := httpsimp.MakeGet(baseURL, path, params, headers).WithContext(myCtx)
+    err := httpsimp.Perform(req, client, httpsimp.JSON(&resp))
+
+You can build the entire http.Request yourself and just call Perform:
 
     var resp responseType
     err := httpsimp.Perform(&http.Request{
         Method: http.MethodPut,
         URL:    httpsimp.URL(baseURL, path, params),
         Header: http.Header{...},
-        Body:   []byte{"whatever"},
+        Body:   myReader,
     }, httpsimp.JSON(&resp))
 
-Use URL func to concatenate a URL and include query params, and EncodeForm
-helper to generate application/x-www-form-urlencoded bodies.
+When building custom requests, use our helpers:
 
-Finally, you're free to build and execute a request through other means
+URL concatenates a URL and adds query params.
+
+EncodeForm, EncodeJSONBody and SetBody add a body to a request.
+
+Finally, you're free to obtain an http.Response through other means
 and then call Parse to handle the response:
 
-    req := EncodeForm(&http.Request{
-        Method: http.MethodPost,
-        URL:    httpsimp.URL(baseURL, path, nil),
-        Header: http.Header{...},
-    }, url.Params{...})
-
-    httpResp, err := whatever(req)
+    httpResp, err := executeSomehow(obtainHTTPRequestSomehow())
     if err != nil { ... }
 
     var resp responseType

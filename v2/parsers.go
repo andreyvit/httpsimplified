@@ -12,7 +12,10 @@ import (
 
 /*
 Raw is a Parser function that verifies the response status code and returns
-the raw *http.Response; result must be a pointer to *http.Response variable.
+the raw *http.Response without reading or closing the body (which you MUST
+do when you're done with the response).
+
+Pass the result of this function into Do or Parse to handle a response.
 */
 func Raw(ptr **http.Response, mopt ...ParseOption) Parser {
 	return MakeParser("", mopt, func(resp *http.Response) (interface{}, error) {
@@ -25,6 +28,8 @@ func Raw(ptr **http.Response, mopt ...ParseOption) Parser {
 JSON is a Parser function that verifies the response status code and content
 type (which must be ContentTypeJSON) and unmarshals the body into the
 result variable (which can be anything that you'd pass to json.Unmarshal).
+
+Pass the result of this function into Do or Parse to handle a response.
 */
 func JSON(result interface{}, mopt ...ParseOption) Parser {
 	if result == nil {
@@ -41,7 +46,9 @@ func JSON(result interface{}, mopt ...ParseOption) Parser {
 
 /*
 Bytes is a Parser function that verifies the response status code and reads
-the entire body into a byte array; result must be a pointer to a []byte variable.
+the entire body into a byte array.
+
+Pass the result of this function into Do or Parse to handle a response.
 */
 func Bytes(result *[]byte, mopt ...ParseOption) Parser {
 	return MakeParser("", mopt, func(resp *http.Response) (interface{}, error) {
@@ -57,7 +64,9 @@ func Bytes(result *[]byte, mopt ...ParseOption) Parser {
 
 /*
 PlainText is a Parser function that verifies the response status code and reads
-the entire body into a string; result must be a pointer to a string variable.
+the entire body into a string.
+
+Pass the result of this function into Do or Parse to handle a response.
 */
 func PlainText(result *string, mopt ...ParseOption) Parser {
 	if result == nil {
@@ -82,10 +91,9 @@ func PlainText(result *string, mopt ...ParseOption) Parser {
 
 /*
 None is a Parser function that verifies the response status code and discards
-the response body; result argument is ignored and should be nil.
+the response body.
 
-A typical use would be to pass this function into Get, Post or Perform,
-but you can also call it directly.
+Pass the result of this function into Do or Parse to handle a response.
 */
 func None(mopt ...ParseOption) Parser {
 	return MakeParser("", mopt, func(resp *http.Response) (interface{}, error) {

@@ -15,7 +15,7 @@ func get(statusCode int, ctype string, body []byte, parsers ...Parser) error {
 	}))
 	defer srv.Close()
 
-	return Get("", srv.URL, nil, nil, http.DefaultClient, parsers...)
+	return Do(MakeGet("", srv.URL, nil, nil), http.DefaultClient, parsers...)
 }
 
 func TestGetJSON200(t *testing.T) {

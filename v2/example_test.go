@@ -15,10 +15,10 @@ const (
 func Example() {
 	var resp exampleResponse
 	// url.Values is just a map[string][]string
-	err := httpsimp.Get(endpointURL, "examples/foo.json", url.Values{
+	err := httpsimp.Do(httpsimp.MakeGet(endpointURL, "examples/foo.json", url.Values{
 		"param1": []string{"value1"},
 		"param2": []string{"value2"},
-	}, nil, http.DefaultClient, httpsimp.JSON(&resp))
+	}, nil), http.DefaultClient, httpsimp.JSON(&resp))
 
 	if err != nil {
 		log.Fatal(err)
@@ -29,13 +29,13 @@ func Example() {
 func Example_customHeaders() {
 	var resp exampleResponse
 	// url.Values and http.Header are both just map[string][]string
-	err := httpsimp.Get(endpointURL, "examples/foo.json", url.Values{
+	err := httpsimp.Do(httpsimp.MakeGet(endpointURL, "examples/foo.json", url.Values{
 		"param1": []string{"value1"},
 		"param2": []string{"value2"},
 	}, http.Header{
 		"X-Powered-By":               []string{"Golang"},
 		httpsimp.AuthorizationHeader: []string{httpsimp.BasicAuthValue("user", "secret")},
-	}, http.DefaultClient, httpsimp.JSON(&resp))
+	}), http.DefaultClient, httpsimp.JSON(&resp))
 
 	if err != nil {
 		log.Fatal(err)

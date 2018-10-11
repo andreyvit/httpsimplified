@@ -58,6 +58,10 @@ func getResponseError(err error) *responseError {
 	return e
 }
 
+/*
+StatusCode returns the HTTP status code carried by the given error.
+Returns 0 if the error is not produced by a body parser function.
+*/
 func StatusCode(err error) int {
 	if e := getResponseError(err); e != nil {
 		return e.StatusCode

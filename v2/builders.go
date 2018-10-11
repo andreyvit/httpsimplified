@@ -2,6 +2,7 @@ package httpsimp
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -62,11 +63,7 @@ func EncodeForm(r *http.Request, params url.Values) *http.Request {
 		params = url.Values{}
 	}
 	body := []byte(params.Encode())
-
-	r.Body = ioutil.NopCloser(bytes.NewReader(body))
-	r.GetBody = func() (io.ReadCloser, error) {
-		return ioutil.NopCloser(bytes.NewReader(body)), nil
-	}
+	_ = SetBody(r, body)
 
 	if r.Header == nil {
 		r.Header = make(http.Header)
@@ -75,5 +72,43 @@ func EncodeForm(r *http.Request, params url.Values) *http.Request {
 		r.Header["Content-Type"] = []string{ContentTypeFormURLEncoded}
 	}
 
+	return r
+}
+
+/*
+EncodeJSONBody encodes the given object into JSON (application/json)
+format and sets the body and Content-Type on the given request.
+
+If JSON encoding fails, the method panics.
+
+To properly handle HTTP redirects, both Body and GetBody are set.
+*/
+func EncodeJSONBody(r *http.Request, obj interface{}) *http.Request {
+	body, err := json.Marshal(obj)
+	if err != nil {
+		panic(err)
+	}
+	_ = SetBody(r, body)
+
+	if r.Header == nil {
+		r.Header = make(http.Header)
+	}
+	if r.Header["Content-Type"] == nil {
+		r.Header["Content-Type"] = []string{ContentTypeJSON}
+	}
+
+	return r
+}
+
+/*
+SetBody sets the given request's body to the given data.
+
+To properly handle HTTP redirects, both Body and GetBody are set.
+*/
+func SetBody(r *http.Request, data []byte) *http.Request {
+	r.Body = ioutil.NopCloser(bytes.NewReader(data))
+	r.GetBody = func() (io.ReadCloser, error) {
+		return ioutil.NopCloser(bytes.NewReader(data)), nil
+	}
 	return r
 }
