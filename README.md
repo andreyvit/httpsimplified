@@ -8,7 +8,7 @@ client := &http.Client{
 }
 
 var resp responseType
-err := httpsimplified.Get(baseURL, path, params, headers, client, httpsimplified.JSON(&resp))
+err := httpsimp.Do(httpsimp.MakeGet(baseURL, path, params, headers), client, httpsimp.JSON(&resp))
 ```
 
 ## v2
