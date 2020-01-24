@@ -4,6 +4,12 @@ Changelog
 See [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+2.0.1 (2020-01-24)
+------------------
+
+- 🐞`SetBody` now sets `ContentLength` on `http.Request`, this was an oversight
+
+
 2.0.0
 -----
 

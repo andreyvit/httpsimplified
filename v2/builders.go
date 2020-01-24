@@ -110,5 +110,6 @@ func SetBody(r *http.Request, data []byte) *http.Request {
 	r.GetBody = func() (io.ReadCloser, error) {
 		return ioutil.NopCloser(bytes.NewReader(data)), nil
 	}
+	r.ContentLength = int64(len(data))
 	return r
 }
