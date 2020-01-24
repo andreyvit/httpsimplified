@@ -7,7 +7,8 @@ See [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 2.0.0
 -----
 
-### Breaking Changes
+Breaking Changes:
+
 - Package name changed from `httpsimplified` to `httpsimp`.
 - Renamed `Perform` into `Do`, added `*http.Client` argument.
 - Removed `Get`, `Post`, `Put`, instead one needs to call `Do` with a result of the new `MakeGet` or `MakeForm`.
@@ -16,7 +17,8 @@ See [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Parsers can no longer be used directly; use `Parse` function instead.
 - A single non-public error is used instead of `StatusError` and `ContentTypeError`.
 
-### New Features
+New Features:
+
 - Added support for multiple body parsers.
 - Added support for customizing status codes and content types expected by body parsers.
 - Added request builders: `MakeGet`, `MakeForm`, `MakeJSON` and `Make`.
