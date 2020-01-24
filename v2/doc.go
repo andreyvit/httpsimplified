@@ -8,7 +8,7 @@ Call Perform with MakeGet, MakeForm, MakeJSON or Make
 to send a request and parse the response:
 
     var resp responseType
-    err := httpsimp.Perform(httpsimp.MakeGet(baseURL, path, params, headers), client, httpsimp.JSON(&resp))
+    err := httpsimp.Do(httpsimp.MakeGet(baseURL, path, params, headers), client, httpsimp.JSON(&resp))
 
 where httpsimp.JSON is a body parser function (we also provide PlainText,
 Bytes, Raw and None parsers, and you can define your own).
